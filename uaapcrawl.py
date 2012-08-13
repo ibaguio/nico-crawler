@@ -12,6 +12,8 @@ home = "http://www.statsboard.webnatin.com/uaap/seniors/2012/"
 user_agent = "Mozilla/4.0 (compatible; MSIE 9.0; Windows NT)"
 headers = {'User-Agent': user_agent}
 
+out_dir = "spreadsheets/"
+
 extended_url = "gamestatbypts.asp?gameid=%(game_id)d&qtr=0"
 
 def getPage(url,verbose=False,data=None):
@@ -55,19 +57,10 @@ def parsePage(markup):
 
 	#parse team
 	teamA = markup[:markup.index("TECH. FOULS")+63]
-	ff = open("teamA.html","w")
-	ff.write(teamA)
-	ff.close()
 	teamB = markup[markup.index("TECH. FOULS")+len("TECH. FOULS")+60:]
-	ff = open("teamB.html","w")
-	ff.write(teamB)
-	ff.close()
 	jdata[jdata["team1"]] = parseTeamInfo(teamA)
 	jdata[jdata["team2"]] = parseTeamInfo(teamB)
 
-	f = open("out2.html","w")
-	f.write(json.dumps(jdata))
-	f.close()
 	return jdata
 
 def parseTeamInfo(markup):
@@ -172,7 +165,7 @@ def write_yahoo(sheet,team,date):
 		row+=1
 
 def write_to_spreadsheet(jdata):
-	fname = jdata["team1"]+"_"+jdata["team2"]+".xls"
+	fname = out_dir+jdata["team1"]+"_"+jdata["team2"]+".xls"
 
 	xls = Workbook()
 	sheet1 = xls.add_sheet(jdata["team1"])
@@ -186,13 +179,18 @@ def write_to_spreadsheet(jdata):
 
 	xls.save(fname)
 
+def checkDirs():
+  if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+    print "Created an outfolder.."
+
 def main():
+	checkDirs
 	#get html main page
 	for i in range(1,24):
 		html = getPage(home+extended_url%{"game_id":i},verbose=True)
 		data = parsePage(html)
 		write_to_spreadsheet(data)
-		break
 
 if __name__ == "__main__":
 	main()
