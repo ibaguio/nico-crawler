@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import urllib,urllib2
-import sys,re,json
+import sys,re,json,os
 from xlwt import *
 from urllib2 import HTTPError, URLError
 from PlayerParser import *
@@ -180,12 +180,12 @@ def write_to_spreadsheet(jdata):
 	xls.save(fname)
 
 def checkDirs():
-  if not os.path.exists(log_dir):
-    os.makedirs(log_dir)
+  if not os.path.exists(out_dir):
+    os.makedirs(out_dir)
     print "Created an outfolder.."
 
 def main():
-	checkDirs
+	checkDirs()
 	#get html main page
 	for i in range(1,24):
 		html = getPage(home+extended_url%{"game_id":i},verbose=True)
