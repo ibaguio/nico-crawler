@@ -62,7 +62,7 @@ class PlayerParser(HTMLParser):
 		elif self.cur == 7:
 			self.tmp_player["3pt_pct"] = data
 		elif self.cur == 8:
-			self.tmp_player["2pct_made"] = data
+			self.tmp_player["2pt_made"] = data
 		elif self.cur == 9:
 			self.tmp_player["2pt_attempt"] = data
 		elif self.cur == 10:

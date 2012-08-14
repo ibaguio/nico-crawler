@@ -53,7 +53,10 @@ def parsePage(markup):
 	markup = markup[markup.index(team_marker)+len(team_marker):]
 	jdata["team1"] = markup[:markup.index("</font></td>")]
 	t2 = markup[markup.index(team_marker)+len(team_marker):markup.index(team_marker)+len(team_marker)+15]
-	jdata["team2"] = t2[:t2.index("</font></td>")]
+	try:
+		jdata["team2"] = t2[:t2.index("</font></td>")]
+	except:
+		jdata["team2"] = t2
 
 	#parse team
 	teamA = markup[:markup.index("TECH. FOULS")+63]
@@ -135,7 +138,7 @@ def parseTeamInfo(markup):
 def write_yahoo(sheet,team,date):
 	write_game_info(sheet,team,date)
 	write_players_header(sheet)
-
+	
 	#players
 	row = 7
 	for pinfo in team["players"]:
@@ -147,7 +150,7 @@ def write_yahoo(sheet,team,date):
 		sheet.write(row, 5, pinfo["3pt_made"])
 		sheet.write(row, 6, pinfo["3pt_attempt"])
 		sheet.write(row, 7, pinfo["3pt_pct"])
-		sheet.write(row, 8, pinfo["2pct_made"])
+		sheet.write(row, 8, pinfo["2pt_made"])
 		sheet.write(row, 9, pinfo["2pt_attempt"])
 		sheet.write(row, 10, pinfo["2pt_pct"])
 		sheet.write(row, 11, pinfo["ft_made"])
@@ -163,6 +166,43 @@ def write_yahoo(sheet,team,date):
 		sheet.write(row, 21, pinfo["fouls_tot"])
 		sheet.write(row, 22, pinfo["fouls_wa"])
 		row+=1
+
+	row += 2
+	sheet.write(row, 2, "TEAM")
+	sheet.write(row, 14, team["summary"]["team"]["rb_team"])
+	sheet.write(row, 15, team["summary"]["team"]["rb_off"])
+	sheet.write(row, 20, team["summary"]["team"]["team_to"])
+
+	row += 1
+	sheet.write(row, 2, "TOTAL")
+	sheet.write(row, 3, team["summary"]["team_total"][0]["mins"])
+	sheet.write(row, 4, team["summary"]["team_total"][0]["tot_pts"])
+	sheet.write(row, 5, team["summary"]["team_total"][0]["3pt_made"])
+	sheet.write(row, 6, team["summary"]["team_total"][0]["3pt_attempt"])
+	sheet.write(row, 7, team["summary"]["team_total"][0]["3pt_pct"])
+	sheet.write(row, 8, team["summary"]["team_total"][0]["2pt_made"])
+	sheet.write(row, 9, team["summary"]["team_total"][0]["2pt_attempt"])
+	sheet.write(row, 10, team["summary"]["team_total"][0]["2pt_pct"])
+	sheet.write(row, 11, team["summary"]["team_total"][0]["ft_made"])
+	sheet.write(row, 12, team["summary"]["team_total"][0]["ft_attempt"])
+	sheet.write(row, 13, team["summary"]["team_total"][0]["ft_pct"])
+	sheet.write(row, 14, team["summary"]["team_total"][0]["rb_tot"])
+	sheet.write(row, 15, team["summary"]["team_total"][0]["rb_off"])
+	sheet.write(row, 16, team["summary"]["team_total"][0]["assist"])
+	sheet.write(row, 17, team["summary"]["team_total"][0]["steal"])
+	sheet.write(row, 18, team["summary"]["team_total"][0]["block"])
+	sheet.write(row, 19, team["summary"]["team_total"][0]["to_unf"])
+	sheet.write(row, 20, team["summary"]["team_total"][0]["to_tot"])
+	sheet.write(row, 21, team["summary"]["team_total"][0]["fouls_tot"])
+	sheet.write(row, 22, team["summary"]["team_total"][0]["fouls_wa"])
+
+	row+=1
+	sheet.write(row, 2, "TEAM FG")
+	sheet.write(row, 8, team["summary"]["team_total_fg"]["2pt_made"])
+	sheet.write(row, 9, team["summary"]["team_total_fg"]["2pt_attempt"])
+	sheet.write(row, 10, team["summary"]["team_total_fg"]["2pt_pct"])
+	sheet.write(row, 21, "TF")
+	sheet.write(row, 22, team["summary"]["team_total_fg"]["tech_foul"])	
 
 def write_to_spreadsheet(jdata):
 	fname = out_dir+jdata["team1"]+"_"+jdata["team2"]+".xls"
@@ -188,9 +228,13 @@ def main():
 	checkDirs()
 	#get html main page
 	for i in range(1,24):
+	try:		
 		html = getPage(home+extended_url%{"game_id":i},verbose=True)
 		data = parsePage(html)
 		write_to_spreadsheet(data)
+	except:
+		print "Some error, skipping"
+		return
 
 if __name__ == "__main__":
 	main()

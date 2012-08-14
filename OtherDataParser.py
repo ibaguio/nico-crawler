@@ -23,14 +23,14 @@ class OtherDataParser(HTMLParser):
 			self.data["rb_team"] = data
 		elif self.cur == 1:
 			self.data["rb_off"] = data
-		elif self.cur == 2:
+		elif self.cur == 3:
 			self.data["team_to"] = data
 		if not data:
 			return
 		if self.cur == 5:
 			self.data["2pt_made"] = data
 		elif self.cur == 6:
-			self.data["2pt_attemp"] = data
+			self.data["2pt_attempt"] = data
 		elif self.cur == 7:
 			self.data["2pt_pct"] = data	
 		elif self.cur == 9:
