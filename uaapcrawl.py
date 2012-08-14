@@ -228,13 +228,12 @@ def main():
 	checkDirs()
 	#get html main page
 	for i in range(1,24):
-	try:		
-		html = getPage(home+extended_url%{"game_id":i},verbose=True)
-		data = parsePage(html)
-		write_to_spreadsheet(data)
-	except:
-		print "Some error, skipping"
-		return
+		try:		
+			html = getPage(home+extended_url%{"game_id":i},verbose=True)
+			data = parsePage(html)
+			write_to_spreadsheet(data)
+		except:
+			print "Some error, skipping"
 
 if __name__ == "__main__":
 	main()
